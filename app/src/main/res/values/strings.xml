@@ -175,6 +175,18 @@
   <string name="permissions_reminder_title">Check permissions</string>
   <string name="permissions_reminder_message">You changed the app mode. Please check the app permissions for this mode to ensure the app functions correctly.</string>
   <string name="take_me_there">Take me there</string>
+  <string name="hyperisland">HyperIsland</string>
+  <string name="hyperisland_mode_help">Automatic follows detected support. Always try adds HyperIsland data even if support is not detected; the system may ignore it. Off uses the standard notification.</string>
+  <string name="hyperisland_support_not_checked">Checking support…</string>
+  <string name="hyperisland_support_confirmed">The system confirmed HyperIsland support.</string>
+  <string name="hyperisland_support_brand_only">A Xiaomi-family device was detected, but HyperIsland support could not be confirmed. Automatic will try it and keep the standard notification visible.</string>
+  <string name="hyperisland_support_not_detected">HyperIsland support was not detected. You can still choose Always try.</string>
+  <string name="hyperisland_support_unknown">The system could not verify HyperIsland support. You can still choose Always try.</string>
+  <string name="hyperisland_checking">Checking…</string>
+  <string name="hyperisland_check_again">Check again</string>
+  <string name="hyperisland_mode_auto">Automatic</string>
+  <string name="hyperisland_mode_force_on">Always try</string>
+  <string name="hyperisland_mode_force_off">Off</string>
   <string name="hyperisland_verification_code">Verification Code</string>
   <string name="hyperisland_drag_hint">Drag pill to paste code</string>
 </resources>

@@ -20,6 +20,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.app.PendingIntentCompat
+import io.github.jd1378.otphelper.HyperIslandMode
 import io.github.jd1378.otphelper.INTENT_ACTION_OPEN_NOTIFICATION_LISTENER_SETTINGS
 import io.github.jd1378.otphelper.MainActivity
 import io.github.jd1378.otphelper.NotifActionReceiver
@@ -82,6 +83,7 @@ class NotificationHelper {
       extras: Bundle,
       code: String,
       copied: Boolean = false,
+      hyperIslandMode: HyperIslandMode = HyperIslandMode.HyperIslandAuto,
     ) {
       if (!hasNotifPermission(context)) return
 
@@ -114,7 +116,11 @@ class NotificationHelper {
       // - setOnlyAlertOnce: true
       // - usesChronometer countdown
       // - Explicit small icon & action
-      val isXiaomi = XiaomiHyperIslandHelper.isHyperIslandSupported(context)
+      val supportStatus = XiaomiHyperIslandHelper.getSupportStatus(context)
+      val useHyperIsland =
+          XiaomiHyperIslandHelper.shouldUseHyperIsland(hyperIslandMode, supportStatus)
+      val hideStandardNotificationText =
+          XiaomiHyperIslandHelper.shouldHideStandardNotificationText(hyperIslandMode, supportStatus)
 
       // Dual-track Live Updates:
       // 1. Android 16+ Promoted Ongoing (for standard OEM island / pill support)
@@ -125,7 +131,10 @@ class NotificationHelper {
               .setExtras(extras)
               .setSmallIcon(R.drawable.logo_round)
               .setContentTitle(code)
-              .setContentText(if (isXiaomi) "" else context.getString(R.string.detected_code).trimEnd('：', ':'))
+              .setContentText(
+                  if (hideStandardNotificationText) ""
+                  else context.getString(R.string.detected_code).trimEnd('：', ':')
+              )
               .setContentIntent(copyPendingIntent)
               .setAutoCancel(true)
               .setOngoing(true)
@@ -146,7 +155,7 @@ class NotificationHelper {
               )
 
       // 2. Xiaomi HyperOS 3 Super Island extras (drag & drop, custom big/small templates, one-tap copy)
-      if (isXiaomi) {
+      if (useHyperIsland) {
         XiaomiHyperIslandHelper.attachHyperIslandExtras(
             context = context,
             builder = notificationBuilder,

@@ -3,6 +3,7 @@ package io.github.jd1378.otphelper.repository
 import android.util.Log
 import androidx.compose.runtime.Stable
 import androidx.datastore.core.DataStore
+import io.github.jd1378.otphelper.HyperIslandMode
 import io.github.jd1378.otphelper.ModeOfOperation
 import io.github.jd1378.otphelper.UserSettings
 import kotlinx.coroutines.flow.Flow
@@ -158,6 +159,12 @@ constructor(
   override suspend fun setBroadcastTargetPackageName(value: String) {
     userSettingsStore.updateData { currentSettings ->
       currentSettings.toBuilder().setBroadcastTargetPackageName(value).build()
+    }
+  }
+
+  override suspend fun setHyperIslandMode(value: HyperIslandMode) {
+    userSettingsStore.updateData { currentSettings ->
+      currentSettings.toBuilder().setHyperIslandMode(value).build()
     }
   }
 }

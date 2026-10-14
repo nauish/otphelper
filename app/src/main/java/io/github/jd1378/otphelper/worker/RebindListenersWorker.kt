@@ -50,11 +50,6 @@ constructor(
     if (userSettings.modeOfOperation == ModeOfOperation.SMS) {
       if (hasSmsPermission(applicationContext)) {
         AppLogger.i(TAG, "SMS mode: (re)enabling SmsListener")
-        try {
-          applicationContext.startService(Intent(applicationContext, SmsListener::class.java))
-        } catch (e: Throwable) {
-          AppLogger.e(TAG, "Failed to start SmsListener", e)
-        }
         SmsListener.disable(applicationContext)
         SmsListener.enable(applicationContext)
       } else if (!silent) {

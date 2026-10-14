@@ -1,6 +1,7 @@
 package io.github.jd1378.otphelper.repository
 
 import androidx.compose.runtime.Stable
+import io.github.jd1378.otphelper.HyperIslandMode
 import io.github.jd1378.otphelper.ModeOfOperation
 import io.github.jd1378.otphelper.UserSettings
 import kotlinx.coroutines.flow.Flow
@@ -53,4 +54,6 @@ interface UserSettingsRepository {
   suspend fun setIsBroadcastCodeEnabled(value: Boolean)
 
   suspend fun setBroadcastTargetPackageName(value: String)
+
+  suspend fun setHyperIslandMode(value: HyperIslandMode)
 }

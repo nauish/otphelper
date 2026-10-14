@@ -148,6 +148,18 @@
     <string name="permissions_reminder_title">檢查權限</string>
     <string name="permissions_reminder_message">您已更改模式。請檢查此模式所需的應用權限，以確保應用程式可正常運作。</string>
     <string name="take_me_there">帶我去那裡</string>
+    <string name="hyperisland">HyperIsland</string>
+    <string name="hyperisland_mode_help">「自動」會依偵測到的支援狀態處理；「一律嘗試」會附加 HyperIsland 資料，但系統可能不顯示；「關閉」會使用一般通知。</string>
+    <string name="hyperisland_support_not_checked">正在檢查支援狀態…</string>
+    <string name="hyperisland_support_confirmed">系統已確認支援 HyperIsland。</string>
+    <string name="hyperisland_support_brand_only">偵測到 Xiaomi 系列裝置，但無法確認 HyperIsland 支援。自動模式會嘗試使用 HyperIsland，並保留一般通知文字。</string>
+    <string name="hyperisland_support_not_detected">未偵測到 HyperIsland 支援。您仍可選擇「一律嘗試」。</string>
+    <string name="hyperisland_support_unknown">無法確認 HyperIsland 支援。您仍可選擇「一律嘗試」。</string>
+    <string name="hyperisland_checking">檢查中…</string>
+    <string name="hyperisland_check_again">重新偵測</string>
+    <string name="hyperisland_mode_auto">自動</string>
+    <string name="hyperisland_mode_force_on">一律嘗試</string>
+    <string name="hyperisland_mode_force_off">關閉</string>
     <string name="hyperisland_verification_code">Verification Code</string>
     <string name="hyperisland_drag_hint">Drag pill to paste code</string>
 </resources>

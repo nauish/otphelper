@@ -149,6 +149,7 @@ constructor(
             extras,
             code,
             copied = false,
+            hyperIslandMode = settings.hyperIslandMode,
         )
       }
       if (settings.isBroadcastCodeEnabled && settings.broadcastTargetPackageName.isNotBlank()) {
@@ -164,15 +165,18 @@ constructor(
       AppLogger.e(TAG, "failed during code-detected actions", e)
     }
 
-    // cleanup recentDetectedMessageHolder after timeout
-    delay(DETECTION_TIMEOUT_MS)
-    synchronized(DETECTION_LOCK) {
-      val message = recentDetectedMessageHolder.message
-      if (message != null) {
-        if (System.currentTimeMillis() - message.timestamp >= DETECTION_TIMEOUT_MS) {
-          // if the timeout has elapsed / no new message is replaced while we waited
-          // we clean it up
-          recentDetectedMessageHolder.message = null
+    // Only SMS detections populate recentDetectedMessageHolder, which is used to match the
+    // corresponding SMS notification. Notification detections have nothing to clean up.
+    if (isSms) {
+      delay(DETECTION_TIMEOUT_MS)
+      synchronized(DETECTION_LOCK) {
+        val message = recentDetectedMessageHolder.message
+        if (message != null) {
+          if (System.currentTimeMillis() - message.timestamp >= DETECTION_TIMEOUT_MS) {
+            // if the timeout has elapsed / no new message is replaced while we waited
+            // we clean it up
+            recentDetectedMessageHolder.message = null
+          }
         }
       }
     }

@@ -19,10 +19,12 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -44,6 +46,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.SavedStateHandle
+import io.github.jd1378.otphelper.HyperIslandMode
 import io.github.jd1378.otphelper.ModeOfOperation
 import io.github.jd1378.otphelper.R
 import io.github.jd1378.otphelper.repository.UserSettingsRepositoryMock
@@ -55,6 +58,7 @@ import io.github.jd1378.otphelper.ui.components.TitleBar
 import io.github.jd1378.otphelper.ui.navigation.MainDestinations
 import io.github.jd1378.otphelper.ui.theme.OtpHelperTheme
 import io.github.jd1378.otphelper.ui.utils.getCurrentLocale
+import io.github.jd1378.otphelper.utils.HyperIslandSupportStatus
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -67,17 +71,41 @@ fun Settings(
   val scope = rememberCoroutineScope()
   val context = LocalContext.current
   val userSettings by viewModel.userSettings.collectAsState()
+  val hyperIslandSupportStatus by viewModel.hyperIslandSupportStatus.collectAsState()
+  val isCheckingHyperIslandSupport by viewModel.isCheckingHyperIslandSupport.collectAsState()
   val scrollState = rememberScrollState()
   val focusManager = LocalFocusManager.current
   var isInitialLoad by remember { mutableStateOf(true) }
   var targetPackageName by remember { mutableStateOf("") }
 
   LaunchedEffect(Unit) {
+    viewModel.loadHyperIslandSupport(context)
     scope.launch {
       targetPackageName = viewModel.getBroadcastTargetPackageName()
       isInitialLoad = false
     }
   }
+
+  val hyperIslandMode =
+      when (userSettings.hyperIslandMode) {
+        HyperIslandMode.HyperIslandForceOn -> HyperIslandMode.HyperIslandForceOn
+        HyperIslandMode.HyperIslandForceOff -> HyperIslandMode.HyperIslandForceOff
+        else -> HyperIslandMode.HyperIslandAuto
+      }
+
+  val hyperIslandSupportText =
+      when (hyperIslandSupportStatus) {
+        HyperIslandSupportStatus.NOT_CHECKED ->
+            stringResource(R.string.hyperisland_support_not_checked)
+        HyperIslandSupportStatus.CONFIRMED ->
+            stringResource(R.string.hyperisland_support_confirmed)
+        HyperIslandSupportStatus.XIAOMI_BRAND_ONLY ->
+            stringResource(R.string.hyperisland_support_brand_only)
+        HyperIslandSupportStatus.NOT_DETECTED ->
+            stringResource(R.string.hyperisland_support_not_detected)
+        HyperIslandSupportStatus.UNKNOWN ->
+            stringResource(R.string.hyperisland_support_unknown)
+      }
 
   LaunchedEffect(targetPackageName) {
     if (isInitialLoad) return@LaunchedEffect
@@ -138,6 +166,62 @@ fun Settings(
               },
           title = stringResource(R.string.detection_test),
       )
+
+      Surface(
+          color = MaterialTheme.colorScheme.surfaceContainer,
+          shape = MaterialTheme.shapes.large,
+      ) {
+        Column(
+            verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.padding_settings)),
+            modifier =
+                Modifier.padding(
+                    horizontal = dimensionResource(R.dimen.padding_li_h),
+                    vertical = dimensionResource(R.dimen.padding_li_v),
+                ),
+        ) {
+          Column(
+              modifier = Modifier.semantics(mergeDescendants = true) {},
+              verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.padding_xs)),
+          ) {
+            SettingLabel(stringResource(R.string.hyperisland))
+            SettingHelp(hyperIslandSupportText)
+            SettingHelp(stringResource(R.string.hyperisland_mode_help))
+            TextButton(
+                enabled = !isCheckingHyperIslandSupport,
+                onClick = { viewModel.refreshHyperIslandSupport(context) },
+            ) {
+              Text(
+                  stringResource(
+                      if (isCheckingHyperIslandSupport) R.string.hyperisland_checking
+                      else R.string.hyperisland_check_again
+                  )
+              )
+            }
+          }
+
+          HyperIslandModeOption(
+              label = stringResource(R.string.hyperisland_mode_auto),
+              selected = hyperIslandMode == HyperIslandMode.HyperIslandAuto,
+              onClick = {
+                viewModel.onHyperIslandModeSelected(HyperIslandMode.HyperIslandAuto)
+              },
+          )
+          HyperIslandModeOption(
+              label = stringResource(R.string.hyperisland_mode_force_on),
+              selected = hyperIslandMode == HyperIslandMode.HyperIslandForceOn,
+              onClick = {
+                viewModel.onHyperIslandModeSelected(HyperIslandMode.HyperIslandForceOn)
+              },
+          )
+          HyperIslandModeOption(
+              label = stringResource(R.string.hyperisland_mode_force_off),
+              selected = hyperIslandMode == HyperIslandMode.HyperIslandForceOff,
+              onClick = {
+                viewModel.onHyperIslandModeSelected(HyperIslandMode.HyperIslandForceOff)
+              },
+          )
+        }
+      }
 
       Surface(
           color = MaterialTheme.colorScheme.surfaceContainer,
@@ -477,6 +561,24 @@ fun Settings(
         }
       }
     }
+  }
+}
+
+@Composable
+private fun HyperIslandModeOption(
+    label: String,
+    selected: Boolean,
+    onClick: () -> Unit,
+) {
+  Row(
+      modifier =
+          Modifier.fillMaxWidth()
+              .clickable(onClick = onClick)
+              .semantics(mergeDescendants = true) {},
+      verticalAlignment = Alignment.CenterVertically,
+  ) {
+    RadioButton(selected = selected, onClick = onClick)
+    Text(label)
   }
 }
 

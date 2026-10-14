@@ -1,5 +1,6 @@
 package io.github.jd1378.otphelper.repository
 
+import io.github.jd1378.otphelper.HyperIslandMode
 import io.github.jd1378.otphelper.ModeOfOperation
 import io.github.jd1378.otphelper.UserSettings
 import kotlinx.coroutines.flow.Flow
@@ -94,6 +95,10 @@ class UserSettingsRepositoryMock : UserSettingsRepository {
   }
 
   override suspend fun setBroadcastTargetPackageName(value: String) {
+    TODO("Not yet implemented")
+  }
+
+  override suspend fun setHyperIslandMode(value: HyperIslandMode) {
     TODO("Not yet implemented")
   }
 }

@@ -9,9 +9,18 @@ import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
 import androidx.core.app.NotificationCompat
+import io.github.jd1378.otphelper.HyperIslandMode
 import io.github.jd1378.otphelper.R
 import org.json.JSONArray
 import org.json.JSONObject
+
+enum class HyperIslandSupportStatus {
+  NOT_CHECKED,
+  CONFIRMED,
+  XIAOMI_BRAND_ONLY,
+  NOT_DETECTED,
+  UNKNOWN,
+}
 
 /**
  * Xiaomi HyperOS 3 HyperIsland (Super Island) integration for OTP detection.
@@ -29,6 +38,10 @@ object XiaomiHyperIslandHelper {
   const val PICS_KEY = "miui.focus.pics"
   const val ACTIONS_KEY = "miui.focus.actions"
   const val DEFAULT_BUSINESS_CODE = "verification_code"
+
+  private const val SUPPORT_PREFS = "hyper_island_support"
+  private const val KEY_SUPPORT_STATUS = "support_status"
+  private const val KEY_BUILD_FINGERPRINT = "build_fingerprint"
 
   /**
    * Checks whether the device manufacturer/brand belongs to Xiaomi (Xiaomi, Redmi, POCO).
@@ -55,25 +68,84 @@ object XiaomiHyperIslandHelper {
   /**
    * Queries OEM provider focus display capability.
    */
-  fun canShowFocus(context: Context): Boolean =
-      try {
-        val bundle = Bundle().apply { putString("package", context.packageName) }
-        context.contentResolver.call(
-            Uri.parse("content://miui.statusbar.notification.public"),
-            "canShowFocus",
-            null,
-            bundle,
-        )?.getBoolean("canShowFocus", false) ?: false
-      } catch (_: Exception) {
-        false
+  fun canShowFocus(context: Context): Boolean? {
+    return try {
+      val bundle = Bundle().apply { putString("package", context.packageName) }
+      val result =
+          context.contentResolver.call(
+              Uri.parse("content://miui.statusbar.notification.public"),
+              "canShowFocus",
+              null,
+              bundle,
+          )
+      if (result?.containsKey("canShowFocus") == true) {
+        result.getBoolean("canShowFocus")
+      } else {
+        null
       }
+    } catch (_: Exception) {
+      null
+    }
+  }
 
   /**
-   * Determines whether HyperIsland notification and pill should replace normal notification.
+   * Returns the persisted support result, detecting and saving it on first use or after a system
+   * build change. Call [refreshSupportStatus] when the user explicitly requests a new check.
    */
-  fun isHyperIslandSupported(context: Context): Boolean {
-    return isXiaomiDevice() || isHyperOS3(context) || canShowFocus(context)
+  fun getSupportStatus(context: Context): HyperIslandSupportStatus {
+    val prefs = context.getSharedPreferences(SUPPORT_PREFS, Context.MODE_PRIVATE)
+    val cachedStatus =
+        prefs.getString(KEY_SUPPORT_STATUS, null)?.let {
+          runCatching { HyperIslandSupportStatus.valueOf(it) }.getOrNull()
+        }
+    if (
+        prefs.getString(KEY_BUILD_FINGERPRINT, null) == Build.FINGERPRINT &&
+            cachedStatus != null &&
+            cachedStatus != HyperIslandSupportStatus.NOT_CHECKED
+    ) {
+      return cachedStatus
+    }
+    return refreshSupportStatus(context)
   }
+
+  /** Rechecks OEM support and persists the result for later notifications. */
+  fun refreshSupportStatus(context: Context): HyperIslandSupportStatus {
+    val providerSupport = canShowFocus(context)
+    val status =
+        when {
+          isHyperOS3(context) || providerSupport == true ->
+              HyperIslandSupportStatus.CONFIRMED
+          isXiaomiDevice() -> HyperIslandSupportStatus.XIAOMI_BRAND_ONLY
+          providerSupport == false -> HyperIslandSupportStatus.NOT_DETECTED
+          else -> HyperIslandSupportStatus.UNKNOWN
+        }
+
+    context.getSharedPreferences(SUPPORT_PREFS, Context.MODE_PRIVATE).edit()
+        .putString(KEY_SUPPORT_STATUS, status.name)
+        .putString(KEY_BUILD_FINGERPRINT, Build.FINGERPRINT)
+        .apply()
+    return status
+  }
+
+  fun shouldUseHyperIsland(
+      mode: HyperIslandMode,
+      supportStatus: HyperIslandSupportStatus,
+  ): Boolean =
+      when (mode) {
+        HyperIslandMode.HyperIslandForceOn -> true
+        HyperIslandMode.HyperIslandForceOff -> false
+        HyperIslandMode.HyperIslandAuto,
+        HyperIslandMode.UNRECOGNIZED ->
+            supportStatus == HyperIslandSupportStatus.CONFIRMED ||
+                supportStatus == HyperIslandSupportStatus.XIAOMI_BRAND_ONLY
+      }
+
+  fun shouldHideStandardNotificationText(
+      mode: HyperIslandMode,
+      supportStatus: HyperIslandSupportStatus,
+  ): Boolean =
+      shouldUseHyperIsland(mode, supportStatus) &&
+          supportStatus == HyperIslandSupportStatus.CONFIRMED
 
   /**
    * Builds the official HyperOS 3 JSON envelope for verification code detection.

@@ -24,9 +24,16 @@ message UserSettings {
   string detection_test_content = 18;
   bool is_broadcast_code_enabled = 19;
   string broadcast_target_package_name = 20;
+  HyperIslandMode hyper_island_mode = 21;
 }
 
 enum ModeOfOperation {
   Notification = 0;
   SMS = 1;
+}
+
+enum HyperIslandMode {
+  HyperIslandAuto = 0;
+  HyperIslandForceOn = 1;
+  HyperIslandForceOff = 2;
 }

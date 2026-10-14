@@ -6,14 +6,21 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import io.github.jd1378.otphelper.HyperIslandMode
 import io.github.jd1378.otphelper.MyWorkManager.disableHistoryCleanup
 import io.github.jd1378.otphelper.MyWorkManager.enableHistoryCleanup
 import io.github.jd1378.otphelper.UserSettings
 import io.github.jd1378.otphelper.repository.UserSettingsRepository
+import io.github.jd1378.otphelper.utils.HyperIslandSupportStatus
 import io.github.jd1378.otphelper.utils.NotificationHelper
+import io.github.jd1378.otphelper.utils.XiaomiHyperIslandHelper
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @Stable
@@ -31,6 +38,45 @@ constructor(
           started = SharingStarted.WhileSubscribed(5_000),
           initialValue = UserSettings.getDefaultInstance(),
       )
+
+  private val _hyperIslandSupportStatus =
+      MutableStateFlow(HyperIslandSupportStatus.NOT_CHECKED)
+  val hyperIslandSupportStatus = _hyperIslandSupportStatus.asStateFlow()
+
+  private val _isCheckingHyperIslandSupport = MutableStateFlow(false)
+  val isCheckingHyperIslandSupport = _isCheckingHyperIslandSupport.asStateFlow()
+
+  fun loadHyperIslandSupport(context: Context) {
+    checkHyperIslandSupport(context, refresh = false)
+  }
+
+  fun refreshHyperIslandSupport(context: Context) {
+    checkHyperIslandSupport(context, refresh = true)
+  }
+
+  private fun checkHyperIslandSupport(context: Context, refresh: Boolean) {
+    if (_isCheckingHyperIslandSupport.value) return
+    val appContext = context.applicationContext
+    viewModelScope.launch {
+      _isCheckingHyperIslandSupport.value = true
+      try {
+        _hyperIslandSupportStatus.value =
+            withContext(Dispatchers.IO) {
+              if (refresh) {
+                XiaomiHyperIslandHelper.refreshSupportStatus(appContext)
+              } else {
+                XiaomiHyperIslandHelper.getSupportStatus(appContext)
+              }
+            }
+      } finally {
+        _isCheckingHyperIslandSupport.value = false
+      }
+    }
+  }
+
+  fun onHyperIslandModeSelected(mode: HyperIslandMode) {
+    viewModelScope.launch { userSettingsRepository.setHyperIslandMode(mode) }
+  }
 
   fun onAutoCopyToggle() {
     val newValue = !userSettings.value.isAutoCopyEnabled
