@@ -148,4 +148,6 @@
     <string name="permissions_reminder_title">Verificar permisos</string>
     <string name="permissions_reminder_message">Has cambiado el modo. Por favor, comprueba los permisos de la aplicación para este modo asegurarte que la aplicación funciona correctamente.</string>
     <string name="take_me_there">Llévame allí</string>
+    <string name="hyperisland_verification_code">Verification Code</string>
+    <string name="hyperisland_drag_hint">Drag pill to paste code</string>
 </resources>

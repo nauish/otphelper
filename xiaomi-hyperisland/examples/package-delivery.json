@@ -1,0 +1,54 @@
+{
+  "param_v2": {
+    "protocol": 1,
+    "business": "APPROVED_BUSINESS_CODE",
+    "updatable": true,
+    "islandFirstFloat": false,
+    "enableFloat": false,
+    "timeout": 30,
+    "aodTitle": "Parcel is out for delivery",
+    "param_island": {
+      "islandProperty": 1,
+      "islandTimeout": 900,
+      "bigIslandArea": {
+        "imageTextInfoLeft": {
+          "type": 1,
+          "picInfo": {
+            "type": 1,
+            "pic": "miui.focus.pic_box"
+          },
+          "textInfo": {
+            "title": "Parcel",
+            "showHighlightColor": false
+          }
+        },
+        "textInfo": {
+          "title": "Today"
+        }
+      },
+      "smallIslandArea": {
+        "picInfo": {
+          "type": 1,
+          "pic": "miui.focus.pic_box"
+        }
+      }
+    },
+    "baseInfo": {
+      "type": 2,
+      "title": "Out for delivery",
+      "content": "Expected by 18:00"
+    },
+    "picInfo": {
+      "type": 1,
+      "pic": "miui.focus.pic_box"
+    },
+    "hintInfo": {
+      "type": 1,
+      "title": "Track parcel",
+      "content": "Details",
+      "actionInfo": {
+        "action": "miui.focus.action_track"
+      }
+    }
+  }
+}

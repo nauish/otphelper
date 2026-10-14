@@ -148,4 +148,6 @@
     <string name="permissions_reminder_title">Verifică permisiunile</string>
     <string name="permissions_reminder_message">Ai schimbat modul. Verifică permisiunile aplicației pentru acest mod pentru a te asigura că aplicația funcționează corect.</string>
     <string name="take_me_there">Du-mă acolo</string>
+    <string name="hyperisland_verification_code">Verification Code</string>
+    <string name="hyperisland_drag_hint">Drag pill to paste code</string>
 </resources>

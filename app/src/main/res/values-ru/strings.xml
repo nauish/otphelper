@@ -148,4 +148,6 @@
     <string name="permissions_reminder_title">Проверьте разрешения</string>
     <string name="permissions_reminder_message">Вы изменили режим. Проверьте разрешения приложения для данного режима, чтобы приложение работало корректно.</string>
     <string name="take_me_there">Открыть эти настройки</string>
+    <string name="hyperisland_verification_code">Verification Code</string>
+    <string name="hyperisland_drag_hint">Drag pill to paste code</string>
 </resources>

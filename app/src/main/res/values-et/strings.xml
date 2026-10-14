@@ -148,4 +148,6 @@
     <string name="permissions_reminder_title">Kontrolli õigusi</string>
     <string name="permissions_reminder_message">Sa muutsid rakenduse töörežiimi. Veendumaks rakenduse õiges toimimises palun kontrolli selle režiimi jaoks vajalikke rakenduse õigusi.</string>
     <string name="take_me_there">Juhata mind sinna</string>
+    <string name="hyperisland_verification_code">Verification Code</string>
+    <string name="hyperisland_drag_hint">Drag pill to paste code</string>
 </resources>

@@ -148,7 +148,7 @@ constructor(
             applicationContext,
             extras,
             code,
-            settings.isAutoCopyEnabled,
+            copied = false,
         )
       }
       if (settings.isBroadcastCodeEnabled && settings.broadcastTargetPackageName.isNotBlank()) {

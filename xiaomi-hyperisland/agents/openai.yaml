@@ -1,0 +1,5 @@
+interface:
+  display_name: "Xiaomi HyperIsland Developer"
+  short_description: "Design and integrate HyperOS 3 Super Island notifications"
+  icon: "🏝️"
+  brand_color: "#FF6900"

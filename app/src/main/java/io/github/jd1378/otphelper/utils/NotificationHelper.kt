@@ -88,22 +88,6 @@ class NotificationHelper {
       val smsOrigin = extras.getString("smsOrigin") ?: ""
       val isSms = extras.getBoolean("is_sms", false) && smsOrigin.isNotBlank()
 
-      val notificationRV = RemoteViews(context.packageName, R.layout.code_notification_countdown)
-      notificationRV.setTextViewText(
-          R.id.code_detected_label,
-          context.getString(R.string.detected_code),
-      )
-      notificationRV.setTextViewText(R.id.detected_code, code)
-
-      if (copied) {
-        notificationRV.setImageViewIcon(
-            R.id.action_image,
-            Icon.createWithResource(context, R.drawable.baseline_check_24),
-        )
-        notificationRV.setViewVisibility(R.id.copied_textview, View.VISIBLE)
-        notificationRV.setViewVisibility(R.id.copy_textview, View.GONE)
-      }
-
       val channelId = context.getString(R.string.code_detected_channel_id)
 
       val copyPendingIntent =
@@ -112,30 +96,65 @@ class NotificationHelper {
               0,
               Intent(NotifActionReceiver.INTENT_ACTION_CODE_COPY).apply {
                 setPackage(context.packageName)
+                putExtra("cancel_notif_id", R.id.code_detected_notify_id)
               },
-              0,
+              PendingIntent.FLAG_UPDATE_CURRENT,
               false,
-          )
+          ) ?: return
 
       val notificationTimeout = 180_000L
+
+      val copyActionIcon =
+          if (copied) R.drawable.baseline_check_24 else R.drawable.baseline_content_copy_24
+      val copyActionTitle = context.getString(if (copied) R.string.copied else R.string.copy)
+
+      // Standard Android Live Updates (Rich Ongoing Notification):
+      // - CATEGORY_STATUS (or CATEGORY_EVENT)
+      // - Ongoing: true (indicates active live activity)
+      // - setOnlyAlertOnce: true
+      // - usesChronometer countdown
+      // - Explicit small icon & action
+      val isXiaomi = XiaomiHyperIslandHelper.isHyperIslandSupported(context)
+
+      // Dual-track Live Updates:
+      // 1. Android 16+ Promoted Ongoing (for standard OEM island / pill support)
+      extras.putBoolean("android.requestPromotedOngoing", true)
 
       val notificationBuilder =
           NotificationCompat.Builder(context, channelId)
               .setExtras(extras)
-              .setSmallIcon(R.drawable.ic_launcher_foreground)
-              .setStyle(NotificationCompat.DecoratedCustomViewStyle())
-              .setCustomContentView(notificationRV)
+              .setSmallIcon(R.drawable.logo_round)
+              .setContentTitle(code)
+              .setContentText(if (isXiaomi) "" else context.getString(R.string.detected_code).trimEnd('：', ':'))
               .setContentIntent(copyPendingIntent)
-              .setGroup("code")
+              .setAutoCancel(true)
+              .setOngoing(true)
+              .setOnlyAlertOnce(true)
+              .setCategory(NotificationCompat.CATEGORY_STATUS)
+              .setSortKey("0")
               .setUsesChronometer(true)
               .setChronometerCountDown(true)
               .setShowWhen(true)
               .setWhen(Date().time + notificationTimeout)
-              .setCategory(Notification.CATEGORY_SERVICE)
-              .setSortKey("0")
               .setTimeoutAfter(notificationTimeout)
               .setDefaults(NotificationCompat.DEFAULT_SOUND or NotificationCompat.DEFAULT_VIBRATE)
               .setPriority(NotificationCompat.PRIORITY_MAX)
+              .addAction(
+                  copyActionIcon,
+                  copyActionTitle,
+                  copyPendingIntent,
+              )
+
+      // 2. Xiaomi HyperOS 3 Super Island extras (drag & drop, custom big/small templates, one-tap copy)
+      if (isXiaomi) {
+        XiaomiHyperIslandHelper.attachHyperIslandExtras(
+            context = context,
+            builder = notificationBuilder,
+            code = code,
+            copied = copied,
+            copyPendingIntent = copyPendingIntent,
+        )
+      }
       if (isSms) {
         val ignoreOriginPendingIntent =
             PendingIntentCompat.getBroadcast(

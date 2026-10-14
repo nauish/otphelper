@@ -20,8 +20,8 @@ android {
     applicationId = "io.github.jd1378.otphelper"
     minSdk = 24
     targetSdk = 36
-    versionCode = 54
-    versionName = "1.20.6"
+    versionCode = 55
+    versionName = "1.20.7"
 
     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     vectorDrawables { useSupportLibrary = true }
@@ -78,6 +78,7 @@ dependencies {
   implementation("androidx.datastore:datastore-preferences:1.1.7")
   testImplementation("junit:junit:4.13.2")
   testImplementation("org.yaml:snakeyaml:2.2")
+  testImplementation("org.json:json:20240303")
   androidTestImplementation("androidx.test.ext:junit:1.3.0")
   androidTestImplementation("androidx.test.espresso:espresso-core:3.7.0")
   androidTestImplementation("androidx.compose.ui:ui-test-junit4")

@@ -1,0 +1,64 @@
+{
+  "scenario": "Ride ETA while driver approaches pickup",
+  "approvalStatus": "pending",
+  "summary": {
+    "bigTemplate": 7,
+    "smallTemplate": 1,
+    "iconPixels": [
+      96,
+      96
+    ]
+  },
+  "states": [
+    {
+      "id": "accepted",
+      "trigger": "Driver accepts an active ride request",
+      "aText": "Ride",
+      "bDigits": "7",
+      "bUnit": "min",
+      "expandedHeadline": "Your driver is coming",
+      "autoExpand": true,
+      "fallbackTitle": "Ride confirmed",
+      "fallbackBody": "Driver is 7 minutes away",
+      "islandTimeoutSeconds": 900
+    },
+    {
+      "id": "approaching",
+      "trigger": "ETA changes materially",
+      "aText": "Ride",
+      "bDigits": "5",
+      "bUnit": "min",
+      "expandedHeadline": "Driver arriving soon",
+      "autoExpand": false,
+      "fallbackTitle": "Driver approaching",
+      "fallbackBody": "Pickup in about 5 minutes",
+      "islandTimeoutSeconds": 900
+    },
+    {
+      "id": "arrived",
+      "trigger": "Driver reaches pickup point",
+      "aText": "Here",
+      "bDigits": "0",
+      "bUnit": "min",
+      "expandedHeadline": "Your driver has arrived",
+      "autoExpand": true,
+      "fallbackTitle": "Driver arrived",
+      "fallbackBody": "Your ride is waiting at the pickup point",
+      "islandTimeoutSeconds": 300
+    },
+    {
+      "id": "ended",
+      "trigger": "User enters car or ride is cancelled",
+      "aText": "Done",
+      "bDigits": "0",
+      "bUnit": "min",
+      "expandedHeadline": "Pickup finished",
+      "autoExpand": false,
+      "fallbackTitle": "Ride update",
+      "fallbackBody": "Ride status has changed",
+      "dismissAfterSeconds": 0
+    }
+  ],
+  "platform": "HyperOS 3",
+  "expandedTemplate": "4"
+}

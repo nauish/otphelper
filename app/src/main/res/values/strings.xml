@@ -175,4 +175,6 @@
   <string name="permissions_reminder_title">Check permissions</string>
   <string name="permissions_reminder_message">You changed the app mode. Please check the app permissions for this mode to ensure the app functions correctly.</string>
   <string name="take_me_there">Take me there</string>
+  <string name="hyperisland_verification_code">Verification Code</string>
+  <string name="hyperisland_drag_hint">Drag pill to paste code</string>
 </resources>

@@ -67,13 +67,14 @@ constructor(
 
           if (code != null) {
             val settings = userSettingsRepository.fetchSettings()
-            val copied =
-                Clipboard.copyCodeToClipboard(
-                    context,
-                    code,
-                    settings.isShowCopyConfirmationEnabled && !settings.isShowToastEnabled,
-                    !settings.isCopyAsNotSensitiveEnabled)
-            NotificationHelper.sendDetectedNotif(context, notif.extras, code, copied)
+            Clipboard.copyCodeToClipboard(
+                context,
+                code,
+                settings.isShowCopyConfirmationEnabled && !settings.isShowToastEnabled,
+                !settings.isCopyAsNotSensitiveEnabled,
+            )
+            // Cancel notification immediately so no persistent pill/notification remains
+            NotificationManagerCompat.from(context).cancel(R.id.code_detected_notify_id)
           }
         }
 

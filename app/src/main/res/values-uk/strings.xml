@@ -40,7 +40,7 @@
     <string name="test_notification_title">Це тестове повідомлення</string>
     <string name="permission_todo_allow_restricted_settings">Дозволити обмежені налаштування</string>
     <string name="failed_to_open_app_settings">Не вдалося відкрити налаштування програми</string>
-  <string name="failed_to_open_link">Не знайдено застосунку для відкриття цього посилання</string>
+    <string name="failed_to_open_link">Не знайдено застосунку для відкриття цього посилання</string>
     <string name="perm_restricted_desc">Якщо ви не змогли дозволити читання сповіщень, спробуйте увімкнути "Дозволити обмежені налаштування" у налаштуваннях додатку</string>
     <string name="language">Мова</string>
     <string name="system_default">Стандартна системи</string>
@@ -148,4 +148,6 @@
     <string name="permissions_reminder_title">Перевірте дозволи</string>
     <string name="permissions_reminder_message">Ви змінили режим. Будь ласка, перевірте дозволи додатка для цього режиму, щоб переконатися, що додаток працює правильно.</string>
     <string name="take_me_there">Відвести мене туди</string>
+    <string name="hyperisland_verification_code">Verification Code</string>
+    <string name="hyperisland_drag_hint">Drag pill to paste code</string>
 </resources>
