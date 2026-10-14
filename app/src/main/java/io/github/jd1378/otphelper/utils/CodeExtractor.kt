@@ -161,33 +161,30 @@ class CodeExtractor // this comment is to separate parts
         } else {
           str
         }
-    val results = generalCodeMatcher.findAll(cleanStr).filter { it.groups[3]?.value != null }
-    if (results.count() > 0) {
-      // generalCodeMatcher also detects if the text contains "code" keyword
-      // so we only run google's regex only if general regex did not capture the "code" group
-      var foundCode =
-          results
-              .find { it.groups[3]!!.value.isNotEmpty() }
+    var hasGeneralMatch = false
+    var foundCode: String? = null
+    for (match in generalCodeMatcher.findAll(cleanStr)) {
+      val candidate = match.groups[3]?.value ?: continue
+      hasGeneralMatch = true
+      if (candidate.isNotEmpty()) {
+        foundCode = candidate.replace(" ", "").replace("-", "")
+        break
+      }
+    }
+
+    if (hasGeneralMatch && foundCode.isNullOrEmpty()) {
+      foundCode =
+          specialCodeMatcher
+              .find(cleanStr)
               ?.groups
-              ?.get(3)
+              ?.get(1)
               ?.value
               ?.replace(" ", "")
               ?.replace("-", "")
+    }
 
-      if (foundCode.isNullOrEmpty()) {
-        foundCode =
-            specialCodeMatcher
-                .find(cleanStr)
-                ?.groups
-                ?.get(1)
-                ?.value
-                ?.replace(" ", "")
-                ?.replace("-", "")
-      }
-
-      if (!foundCode.isNullOrEmpty()) {
-        return toEnglishNumbers(foundCode)
-      }
+    if (!foundCode.isNullOrEmpty()) {
+      return toEnglishNumbers(foundCode)
     }
 
     return null

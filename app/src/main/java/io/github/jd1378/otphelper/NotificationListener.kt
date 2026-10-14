@@ -198,6 +198,8 @@ class NotificationListener : NotificationListenerService() {
           AppLogger.d(TAG, "notification ignored by ignore phrases, pkg=${sbn.packageName}")
           return
         }
+        if (notifyText.length < 4) return
+
         val notificationText = codeExtractor.cleanup(notifyText)
 
         if (notificationText.isNotEmpty()) {
