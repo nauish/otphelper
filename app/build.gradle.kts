@@ -18,7 +18,7 @@ android {
 
   defaultConfig {
     applicationId = "io.github.jd1378.otphelper"
-    minSdk = 24
+    minSdk = 29
     targetSdk = 36
     versionCode = 57
     versionName = "1.20.9"
@@ -47,10 +47,10 @@ android {
     }
   }
   compileOptions {
-    sourceCompatibility = JavaVersion.VERSION_1_8
-    targetCompatibility = JavaVersion.VERSION_1_8
+    sourceCompatibility = JavaVersion.VERSION_21
+    targetCompatibility = JavaVersion.VERSION_21
   }
-  kotlinOptions { jvmTarget = "1.8" }
+  kotlinOptions { jvmTarget = "21" }
   buildFeatures {
     compose = true
     buildConfig = true
